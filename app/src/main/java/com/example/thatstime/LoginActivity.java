@@ -1,6 +1,8 @@
 package com.example.thatstime;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -16,26 +18,46 @@ import com.example.thatstime.models.*;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText username, etPassword;
-    private Button btnLogin;
+    private Button btnLogin, btnRegister;
     private ApiService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("app_prefs", MODE_PRIVATE);
+        String token = sharedPreferences.getString("jwt_token", null);
+        if(token != null)
+        {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
+
         setContentView(R.layout.activity_login);
 
         username = findViewById(R.id.usernameInput);
         etPassword = findViewById(R.id.passwordInput);
         btnLogin = findViewById(R.id.loginButton);
+        btnRegister = findViewById(R.id.registerButton);
 
         // Initialize the API service
-        apiService = RetrofitClient.getClient("http://10.0.2.2:5001").create(ApiService.class);
+        apiService = RetrofitClient.getClient("").create(ApiService.class);
 
         // Set login button action
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loginUser();
+            }
+        });
+
+        btnRegister.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -64,6 +86,8 @@ public class LoginActivity extends AppCompatActivity {
                     editor.apply();
                     // Redirect or show success
                     Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
                 } else {
                     Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
                 }

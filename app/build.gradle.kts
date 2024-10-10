@@ -49,4 +49,6 @@ dependencies {
 
     // OkHttp logging interceptor (optional, for logging HTTP requests)
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
+
+    implementation("com.auth0:java-jwt:4.2.1")
 }
