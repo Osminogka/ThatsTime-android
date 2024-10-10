@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ApiService apiService;
 
+    private int month;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,11 +65,11 @@ public class MainActivity extends AppCompatActivity {
 
         calendar = Calendar.getInstance(); // Get current date
 
+        month = calendar.get(Calendar.MONTH) + 1;
         selectedDayOfMonth = 1;
 
         record.setSelectedYear(calendar.get(Calendar.YEAR));
-        record.setSelectedMonth(calendar.get(Calendar.MONTH));
-        record.setSelectedDay(calendar.get(Calendar.DAY_OF_MONTH));
+        record.setSelectedMonth(month);
         record.setCreator(username);
         record.setImportance(0);
         record.setHour(0);
@@ -95,13 +97,15 @@ public class MainActivity extends AppCompatActivity {
 
         buttonPrevious.setOnClickListener(v -> {
             calendar.add(Calendar.MONTH, -1); // Go to the previous month
-            record.setSelectedMonth(calendar.get(Calendar.MONTH));
+            month--;
+            record.setSelectedMonth(month);
             updateMonthDisplay();
         });
 
         buttonNext.setOnClickListener(v -> {
             calendar.add(Calendar.MONTH, 1); // Go to the next month
-            record.setSelectedMonth(calendar.get(Calendar.MONTH));
+            month++;
+            record.setSelectedMonth(month);
             updateMonthDisplay();
         });
 
@@ -120,6 +124,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 submitRecord();
+            }
+        });
+
+        buttonViewRecords.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ViewRecordActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -195,9 +207,9 @@ public class MainActivity extends AppCompatActivity {
                 Button dayButton = new Button(this);
                 dayButton.setText(String.valueOf(day));
                 dayButton.setOnClickListener(v -> {
-                    selectedDayOfMonth = day;
+                    selectedDayOfMonth = day+1;
                     selectedDay.setText("Day selected: " + day);
-                    record.setSelectedDay(calendar.get(Calendar.DAY_OF_MONTH));
+                    record.setSelectedDay(day);
                 });
 
                 row.addView(dayButton);
@@ -218,8 +230,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void submitRecord(){
-        Gson gson = new Gson();
-        String json = gson.toJson(record);
 
         Call<RecordResponse> call = apiService.submitNewRecord(record);
 

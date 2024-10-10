@@ -17,7 +17,7 @@ import com.example.thatstime.models.*;
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText userName, etEmail, etPassword, etConfirmPassword;
-    private Button btnRegisterSubmit;
+    private Button btnRegisterSubmit, btnReturn;
     private ApiService apiService;
 
     @Override
@@ -30,6 +30,7 @@ public class RegisterActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.et_register_password);
         etConfirmPassword = findViewById(R.id.et_register_confirm_password);
         btnRegisterSubmit = findViewById(R.id.btn_register_submit);
+        btnReturn = findViewById(R.id.btn_return);
 
         // Initialize API service
         apiService = RetrofitClient.getClient("").create(ApiService.class);
@@ -38,6 +39,13 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 registerUser();
+            }
+        });
+
+        btnReturn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }
